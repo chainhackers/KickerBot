@@ -1,7 +1,8 @@
 import {CommandContext, Context,} from 'grammy'
 import config from 'config'
+import assert from 'assert'
 import {bot, setupBot} from "./context"
-
+import {startTracking} from "./ban"
 
 main()
 
@@ -27,14 +28,10 @@ async function launch(): Promise<void> {
     setupCommands()
 
     bot.on("message:entities:mention", (ctx) => {
-        // console.log("ctx=", ctx)
-        if (ctx.message?.text?.includes(`@${ctx.me.username}`)) {
-            console.log("I'm mentioned -----------------------------------")
-
-            const replyToMessage = ctx.update?.message?.reply_to_message
-            if (replyToMessage) {
-
-            }
+        const kickerMentioned = ctx.message?.text?.includes(`@${ctx.me.username}`)
+        const isReply = ctx.update?.message?.reply_to_message
+        if (kickerMentioned && isReply) {
+            trackBanVotes(ctx)
         }
     })
 
@@ -74,7 +71,23 @@ function mask(token: string, visibleChars: number = 11): string {
     return token.substring(0, visibleChars) + hiddenPart
 }
 
-function trackBanVotes(ctx: Context): void {
-    // banCandidate: number, offendingMsgId: number, voteMsgId: number
-    console.log(`We're watching you, mr Anderson @`)
+async function trackBanVotes(ctx: Context): Promise<void> {
+    ctx.update?.message?.reply_to_message
+
+    const replyTo = ctx.update?.message?.reply_to_message
+    const complaint = {
+        banCandidate: replyTo?.from?.id,
+        offendingMsgId: replyTo?.message_id,
+        voteMsgId: ctx.update?.message?.message_id
+    }
+
+    assert(complaint.banCandidate && complaint.offendingMsgId && complaint.voteMsgId,
+        `complaint.banCandidate && complaint.offendingMsgId && complaint.voteMsgId`)
+
+    const banCandidateUsername = replyTo?.from?.username
+    const warning = `We're watching you, mr Anderson @${banCandidateUsername}`
+    console.log(warning)
+
+    startTracking(complaint)
+    await ctx.reply(warning)
 }
