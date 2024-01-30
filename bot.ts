@@ -1,6 +1,6 @@
 import {CommandContext, Context,} from 'grammy'
 import config from 'config'
-import {bot, setupBot} from "./context";
+import {bot, setupBot} from "./context"
 
 
 main()
@@ -25,6 +25,19 @@ async function launch(): Promise<void> {
     setupBot(config.get('telegram.bot_token'))
 
     setupCommands()
+
+    bot.on("message:entities:mention", (ctx) => {
+        // console.log("ctx=", ctx)
+        if (ctx.message?.text?.includes(`@${ctx.me.username}`)) {
+            console.log("I'm mentioned -----------------------------------")
+
+            const replyToMessage = ctx.update?.message?.reply_to_message
+            if (replyToMessage) {
+
+            }
+        }
+    })
+
     await bot.api.sendMessage(config.get('telegram.bot_admin'), 'Hi I\'m online')
     console.log('Bot online')
     return bot.start()
@@ -59,4 +72,9 @@ function info(ctx: CommandContext<Context>) {
 function mask(token: string, visibleChars: number = 11): string {
     const hiddenPart = '*'.repeat(token.length - visibleChars)
     return token.substring(0, visibleChars) + hiddenPart
+}
+
+function trackBanVotes(ctx: Context): void {
+    // banCandidate: number, offendingMsgId: number, voteMsgId: number
+    console.log(`We're watching you, mr Anderson @`)
 }
