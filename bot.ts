@@ -1,8 +1,8 @@
 import {CommandContext, Context,} from 'grammy'
 import config from 'config'
 import assert from 'assert'
-import {bot, setupBot} from "./context"
-import {startTracking} from "./ban"
+import {bot, setupBot} from './context'
+import {startTracking, track} from './ban'
 
 main()
 
@@ -35,9 +35,15 @@ async function launch(): Promise<void> {
         }
     })
 
-    await bot.api.sendMessage(config.get('telegram.bot_admin'), 'Hi I\'m online')
-    console.log('Bot online')
-    return bot.start()
+    bot.reaction(["👍"], (ctx) => {
+        track(ctx.update.message_reaction.message_id, ctx.from.id)
+    })
+
+    await bot.api.sendMessage(config.get('telegram.bot_admin'), `Hi I\'m online\nBuild date: ${config.get('build.date')}`)
+    console.log(`Bot online\nBuild date: ${config.get('build.date')}`)
+    return bot.start({
+        allowed_updates: ['message', 'callback_query', 'poll', "message_reaction", "message_reaction_count"]
+    })
 }
 
 function setupCommands() {
@@ -72,20 +78,19 @@ function mask(token: string, visibleChars: number = 11): string {
 }
 
 async function trackBanVotes(ctx: Context): Promise<void> {
-    ctx.update?.message?.reply_to_message
-
     const replyTo = ctx.update?.message?.reply_to_message
     const complaint = {
         banCandidate: replyTo?.from?.id,
         offendingMsgId: replyTo?.message_id,
-        voteMsgId: ctx.update?.message?.message_id
+        voteMsgId: ctx.update?.message?.message_id,
+        votesBy: new Set<number>([ctx.from.id])
     }
 
     assert(complaint.banCandidate && complaint.offendingMsgId && complaint.voteMsgId,
         `complaint.banCandidate && complaint.offendingMsgId && complaint.voteMsgId`)
 
     const banCandidateUsername = replyTo?.from?.username
-    const warning = `We're watching you, mr Anderson @${banCandidateUsername}`
+    const warning = `We're watching you, mr Anderson @${banCandidateUsername} 👀`
     console.log(warning)
 
     startTracking(complaint)
