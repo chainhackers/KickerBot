@@ -1,20 +1,20 @@
 {
-  "name": "ts-telegram-bot",
-  "version": "1.0.0",
+  "name": "kicker-bot",
+  "version": "0.0.3",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
     "build": "add_date_to_config.sh && esbuild bot.ts --bundle --platform=node --outfile=dist/telegram-bot.js"
   },
   "dependencies": {
-    "config": "^3.3.10",
-    "grammy": "^1.20.3",
+    "config": "^3.3.11",
+    "grammy": "^1.20.4",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
     "@types/config": "^3.3.3",
-    "@types/node": "^20.11.10",
-    "esbuild": "^0.19.11",
+    "@types/node": "^20.11.17",
+    "esbuild": "^0.20.0",
     "typescript": "^5.3.3"
   }
 }
