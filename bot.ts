@@ -36,7 +36,7 @@ async function launch(): Promise<void> {
     })
 
     bot.reaction(["👍"], (ctx) => {
-        track(ctx.update.message_reaction.message_id, ctx.from.id)
+        track(ctx, ctx.update.message_reaction.message_id, ctx.from.id)
     })
 
     await bot.api.sendMessage(config.get('telegram.bot_admin'), `Hi I\'m online\nBuild date: ${config.get('build.date')}`)
@@ -78,6 +78,7 @@ function mask(token: string, visibleChars: number = 11): string {
 }
 
 async function trackBanVotes(ctx: Context): Promise<void> {
+    // ctx.banChatMember()
     const replyTo = ctx.update?.message?.reply_to_message
     const complaint = {
         banCandidate: replyTo?.from?.id,
