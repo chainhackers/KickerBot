@@ -16,7 +16,6 @@
 2. **Запустите бота с помощью команды**:
     
     ```bash
-    bashCopy code
     ./add_date_to_config.sh && yarn esbuild bot.ts --bundle --platform=node --outfile=dist/telegram-bot.js && node ./dist/telegram-bot.js
     ```
     
