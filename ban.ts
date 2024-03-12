@@ -20,7 +20,7 @@ export async function track(ctx: ReactionContext<Context>, messageId: number, us
     console.log(`Vote for ${complaint.banCandidate} by ${userId} Votes: ${complaint.votesBy.size}`)
     if (complaint.votesBy.size >= ban_threshold) {
         console.log(`Banning ${complaint.banCandidate} for ${complaint.offendingMsgId}`)
-        await ctx.banChatMember(complaint.banCandidate)
+        await ctx.banChatMember(complaint.banCandidate).catch(console.error)
         complaintsByVoteMsgId.delete(messageId)
     }
 }
