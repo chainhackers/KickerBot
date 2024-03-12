@@ -1,0 +1,7 @@
+{
+    "online_message": "Hi I'm online\nBuild date: {{buildDate}}",
+    "start_message": "Hello {{username}}",
+    "help_message": "/start - start talking, get your username and ID\n/help - this message\n/info - bot build date",
+    "info_message": "Bot build date: {{buildDate}}",
+    "user_warning": "We're watching you, mr Anderson @{{username}} 👀"
+}
